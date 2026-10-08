@@ -1,0 +1,20 @@
+THUPPARIVALAN — BASIC CASE ENTRY
+
+TITLE
+Operation Silver Nexus
+
+DISTRICT
+Chennai South
+
+PRIORITY
+HIGH
+
+DESCRIPTION
+Investigation into a suspected logistics coordination network involving Arjun Mehta, Vikram Rao and unidentified associates operating around Guindy Junction. Initial intelligence indicates coordinated communications and movement of a shared vehicle.
+
+NOTES
+Initial case docket. Verify communications, vehicle movement and links between persons appearing in subsequent evidence.
+
+INSTRUCTION
+Use these values in Create New Case. Leave the evidence/file field EMPTY.
+After creating the case, use Deposit Evidence separately.

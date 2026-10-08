@@ -1,0 +1,5 @@
+Caller,Receiver,Phone,Vehicle,Location,Amount,Timestamp,Investigator_Notes
+Arjun Mehta,Kavya Menon,+91-98765-43210,TN38-AB-1234,Guindy Junction,420000,2026-10-05 07:50,suspect Arjun Mehta used phone +91-98765-43210 and vehicle TN38-AB-1234; coordinator Kavya Menon used the same phone at Guindy Junction.
+Kavya Menon,Vikram Rao,+91-98765-43210,TN38-AB-1234,Guindy Junction,390000,2026-10-05 10:30,coordinator Kavya Menon used phone +91-98765-43210; agent Vikram Rao used vehicle TN38-AB-1234 during the coordination.
+Vikram Rao,Arjun Mehta,+91-98765-43210,TN38-AB-1234,Guindy Junction,450000,2026-10-05 13:15,agent Vikram Rao used phone +91-98765-43210 and vehicle TN38-AB-1234; suspect Arjun Mehta coordinated from Guindy Junction.
+Kavya Menon,Arjun Mehta,+91-90000-11223,TN18-GH-3456,Royapuram Port,180000,2026-10-05 18:05,coordinator Kavya Menon used phone +91-90000-11223 and vehicle TN18-GH-3456 near Royapuram Port.

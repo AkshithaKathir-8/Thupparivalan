@@ -1,0 +1,5 @@
+id,entity_code,entity_name,case_a,case_b,match_type,match_reason,confidence,created_at
+ccl-001,PER-001,Ravi Kumar,CASE-001,CASE-006,EXACT_IDENTIFIER_MATCH,"Same Person (Ravi Kumar), identical phone (+91-98401-22441), matching transport vehicle (TN-09-BE-4491)",0.96,2026-09-25 04:00:00
+ccl-002,PER-010,Manoj K,CASE-002,CASE-006,COMMUNICATION_LINK,Direct telecommunication log and shared intermediary contact linking hawala ring to highway cargo syndicate,0.91,2026-09-26 12:15:00
+ccl-003,PER-010,Manoj K,CASE-002,CASE-007,CO-OCCURRENCE_FINANCIAL,Linked through garage workshop accounts in Salem and recurring phone contact with vehicle broker,0.89,2026-09-29 14:00:00
+ccl-004,PER-018,Mohan R,CASE-005,CASE-008,TRANSACTION_AND_IDENTITY,Same GST consultant identity and direct bank wire between shadow subcontract accounts in Madurai and Trichy,0.93,2026-10-01 11:30:00

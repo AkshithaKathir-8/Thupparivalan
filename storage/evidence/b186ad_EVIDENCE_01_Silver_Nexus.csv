@@ -1,0 +1,5 @@
+Caller,Receiver,Phone,Vehicle,Location,Amount,Timestamp,Investigator_Notes
+Arjun Mehta,Vikram Rao,+91-98765-43210,TN38-AB-1234,Guindy Junction,185000,2026-10-01 09:15,suspect Arjun Mehta used phone +91-98765-43210 and vehicle TN38-AB-1234; agent Vikram Rao used the same phone during coordination at Guindy Junction.
+Vikram Rao,Arjun Mehta,+91-98765-43210,TN38-AB-1234,Guindy Junction,220000,2026-10-01 11:40,agent Vikram Rao used phone +91-98765-43210; suspect Arjun Mehta used vehicle TN38-AB-1234 for movement from Guindy Junction.
+Arjun Mehta,Priya Nair,+91-91234-56789,TN09-CD-5678,Ambattur Estate,95000,2026-10-01 15:20,suspect Arjun Mehta used phone +91-91234-56789 and vehicle TN09-CD-5678 near Ambattur Estate.
+Priya Nair,Vikram Rao,+91-91234-56789,TN09-CD-5678,Ambattur Estate,125000,2026-10-02 10:05,agent Priya Nair used phone +91-91234-56789 and vehicle TN09-CD-5678 while meeting Vikram Rao.

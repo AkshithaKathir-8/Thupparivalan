@@ -1,0 +1,3 @@
+caller_number,receiver_number,timestamp,duration_sec,cell_tower_location,caller_name,receiver_name
++919840123456,+919444987654,2026-03-01 14:30:00,240,Royapuram Coastal Tower,Ravi Kumar,Suresh Raina
++919444987654,+919840123456,2026-03-01 16:45:00,180,Ennore Harbor Sector B,Suresh Raina,Ravi Kumar

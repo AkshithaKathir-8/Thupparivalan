@@ -1,0 +1,5 @@
+call_id,caller_number,receiver_number,caller_entity,receiver_entity,call_time,duration_seconds,tower_location
+CDR-0101,+91-98401-22441,+91-98402-99882,Ravi Kumar (PER-001),Arun Prakash (PER-002),2026-09-12 01:45:10,210,Guindy Industrial BTS-3
+CDR-0102,+91-98401-22441,+91-98402-99882,Ravi Kumar (PER-001),Arun Prakash (PER-002),2026-09-12 04:12:05,185,Kathipara Flyover BTS-1
+CDR-0103,+91-94431-77110,+91-98401-22441,Dinesh Babu (PER-003),Ravi Kumar (PER-001),2026-09-12 04:35:20,95,Guindy Industrial BTS-3
+CDR-0104,+91-98401-22441,+91-94422-55010,Ravi Kumar (PER-001),Manoj K (PER-010),2026-09-12 05:10:44,340,Alandur South BTS-2

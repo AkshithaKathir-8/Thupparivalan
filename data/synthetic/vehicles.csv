@@ -1,0 +1,5 @@
+id,code,reg_no,make,entity_type,name
+e201-veh,VEH-001,TN-09-BE-4491,Tata 407 Cargo Van,Vehicle,TN-09-BE-4491 (Tata 407)
+e202-veh,VEH-002,TN-22-CZ-1109,Mahindra Bolero Pickup,Vehicle,TN-22-CZ-1109 (Bolero)
+e203-veh,VEH-003,TN-38-DA-9921,Ashok Leyland Ecomet,Vehicle,TN-38-DA-9921 (Leyland)
+e204-veh,VEH-010,TN-54-E-8810,Maruti Omni Van,Vehicle,TN-54-E-8810 (Omni)

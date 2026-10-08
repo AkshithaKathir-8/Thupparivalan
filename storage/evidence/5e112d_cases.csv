@@ -1,0 +1,9 @@
+case_id,case_name,opened_date,district,status,description
+CASE-001,Operation Northstar,2026-08-11,Coimbatore,Open,Suspected organized financial movement and coordinated activity
+CASE-002,Operation Ember,2026-08-18,Tiruppur,Open,Vehicle-linked warehouse movement
+CASE-003,Operation Meridian,2026-08-24,Erode,Closed,Cross-district network investigation
+CASE-004,Operation Signal,2026-09-02,Coimbatore,Open,Suspicious communication cluster
+CASE-005,Operation Harbor,2026-09-10,Salem,Open,Financial and logistics linkage
+CASE-006,Operation Orbit,2026-09-19,Tiruppur,Open,Potential common entities across cases
+CASE-007,Operation Vector,2026-09-23,Erode,Open,Repeated identifier and location overlap
+CASE-008,Operation Prism,2026-09-28,Coimbatore,Open,Multi-entity relationship analysis

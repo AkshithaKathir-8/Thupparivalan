@@ -1,0 +1,4 @@
+call_id,caller_number,receiver_number,caller_entity,receiver_entity,call_time,duration_seconds,tower_location
+CDR-0601,+91-98401-22441,+91-98402-99882,Ravi Kumar (PER-001),Suresh Raina (PER-004),2026-09-25 02:40:12,310,Sriperumbudur Toll BTS-4
+CDR-0602,+91-98401-22441,+91-94422-55010,Ravi Kumar (PER-001),Manoj K (PER-010),2026-09-25 04:15:22,190,Kanchipuram East BTS-2
+CDR-0603,+91-98401-22441,+91-98402-99882,Ravi Kumar (PER-001),Arun Prakash (PER-002),2026-09-25 06:10:05,145,Tambaram By-Pass BTS-1

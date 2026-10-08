@@ -1,0 +1,20 @@
+THUPPARIVALAN — BASIC CASE ENTRY
+
+TITLE
+Network Echo
+
+DISTRICT
+Chennai North
+
+PRIORITY
+HIGH
+
+DESCRIPTION
+Investigation into a wider coordination network involving Arjun Mehta, Vikram Rao, Kavya Menon and shared communication and transport assets. Cross-case correlation is required.
+
+NOTES
+Third case docket. Establish whether recurring people, phone numbers, vehicles and locations represent the same operational network.
+
+INSTRUCTION
+Use these values in Create New Case. Leave the evidence/file field EMPTY.
+After creating the case, use Deposit Evidence separately.

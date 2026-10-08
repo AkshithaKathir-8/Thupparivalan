@@ -1,0 +1,9 @@
+CHAINTRACE SYNTHETIC EVIDENCE
+Case: CASE-001 / Operation Northstar
+Date: 2026-08-11
+This synthetic report describes a suspected coordinated financial movement.
+Person of interest: Ravi Kumar (PER-001)
+Associated person: Arun Prakash (PER-002)
+Reference phone: PH-001
+Reference vehicle: VEH-001
+Investigative note: Review cross-case identifiers and transaction relationships.

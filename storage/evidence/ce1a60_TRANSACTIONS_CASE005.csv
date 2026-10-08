@@ -1,0 +1,3 @@
+timestamp,from_person,to_person,amount,currency,method,location
+2026-09-11 18:30,PER-004,PER-018,310000,INR,UPI,LOC-005
+2026-09-12 09:12,PER-018,PER-004,50000,INR,UPI,LOC-005

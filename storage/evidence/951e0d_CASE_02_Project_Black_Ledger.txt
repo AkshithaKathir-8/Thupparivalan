@@ -1,0 +1,20 @@
+THUPPARIVALAN — BASIC CASE ENTRY
+
+TITLE
+Project Black Ledger
+
+DISTRICT
+Chennai Central
+
+PRIORITY
+HIGH
+
+DESCRIPTION
+Follow-up financial and logistics investigation involving Arjun Mehta, Vikram Rao and Neha Sharma. Evidence suggests reuse of communication and transport identifiers connected to another investigation.
+
+NOTES
+Second case docket. Compare identifiers and operational contacts with other active case dossiers.
+
+INSTRUCTION
+Use these values in Create New Case. Leave the evidence/file field EMPTY.
+After creating the case, use Deposit Evidence separately.

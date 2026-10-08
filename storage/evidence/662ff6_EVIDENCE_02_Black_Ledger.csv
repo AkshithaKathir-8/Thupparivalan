@@ -1,0 +1,5 @@
+Caller,Receiver,Phone,Vehicle,Location,Amount,Timestamp,Investigator_Notes
+Arjun Mehta,Neha Sharma,+91-98765-43210,TN38-AB-1234,Guindy Junction,310000,2026-10-03 08:45,suspect Arjun Mehta used phone +91-98765-43210 and vehicle TN38-AB-1234; consultant Neha Sharma used the same phone at Guindy Junction.
+Neha Sharma,Vikram Rao,+91-98765-43210,TN38-AB-1234,Guindy Junction,275000,2026-10-03 12:10,consultant Neha Sharma used phone +91-98765-43210; agent Vikram Rao used vehicle TN38-AB-1234 for the same operation.
+Vikram Rao,Suresh Iyer,+91-99887-66554,TN22-EF-9012,Perambur Yard,145000,2026-10-03 17:30,agent Vikram Rao used phone +91-99887-66554 and vehicle TN22-EF-9012 near Perambur Yard.
+Suresh Iyer,Arjun Mehta,+91-99887-66554,TN22-EF-9012,Perambur Yard,165000,2026-10-04 09:25,contractor Suresh Iyer used phone +91-99887-66554 and vehicle TN22-EF-9012 while coordinating with Arjun Mehta.

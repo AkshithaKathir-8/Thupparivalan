@@ -1,0 +1,4 @@
+txn_id,origin_account,beneficiary_account,origin_entity,beneficiary_entity,amount_inr,channel,timestamp,status
+TXN-201,AC-778841001,AC-990021443,Manoj K (PER-010),Karthik Raja (PER-011),840000.00,RTGS Commercial,2026-09-14 11:15:00,HIGH_RISK
+TXN-202,AC-778841001,AC-112233445,Manoj K (PER-010),Ravi Kumar (PER-001),420000.00,Immediate Transfer,2026-09-15 15:45:00,SUSPICIOUS
+TXN-203,AC-990021443,AC-445566778,Karthik Raja (PER-011),Trade Apex Ltd,350000.00,NEFT Settlement,2026-09-16 09:20:00,VERIFIED

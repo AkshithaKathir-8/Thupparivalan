@@ -1,0 +1,9 @@
+evidence_id,case_id,filename,mime_type,entity_ids,integrity_status
+EVD-001,CASE-001,FIR_CASE001.txt,text/plain,PER-001;PER-002,Verified
+EVD-002,CASE-001,CDR_CASE001.csv,text/csv,PER-001;PER-002;PER-011,Not verified
+EVD-003,CASE-002,TRANSACTIONS_CASE002.csv,text/csv,PER-004;PER-010,Verified
+EVD-004,CASE-003,INTELLIGENCE_NOTE_CASE003.txt,text/plain,PER-007;PER-012,Verified
+EVD-005,CASE-005,TRANSACTIONS_CASE005.csv,text/csv,PER-004;PER-018,Verified
+EVD-006,CASE-006,CDR_CASE006.csv,text/csv,PER-001;PER-010,Verified
+EVD-007,CASE-007,VEHICLE_LOG_CASE007.csv,text/csv,PER-007;PER-010,Verified
+EVD-008,CASE-008,INTELLIGENCE_NOTE_CASE008.txt,text/plain,PER-008;PER-018,Verified
