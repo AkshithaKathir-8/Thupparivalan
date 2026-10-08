@@ -1,12 +1,24 @@
 import uuid
 from datetime import datetime
 from typing import Dict, Any, Optional
+
 from sqlalchemy.orm import Session
+
 from app.models.all_models import (
-    Case, Entity, CaseEntity, Relationship, Alert, EvidenceRecord, CrossCaseLink, AuditLedger, Report
+    Case,
+    Entity,
+    CaseEntity,
+    Relationship,
+    Alert,
+    EvidenceRecord,
+    CrossCaseLink,
+    AuditLedger,
+    Report
 )
+
 from app.graph.network_service import build_networkx_graph
 import networkx as nx
+
 
 def generate_investigation_report(
     db: Session,
@@ -16,190 +28,656 @@ def generate_investigation_report(
     scope_notes: Optional[str] = None
 ) -> Report:
     """
-    Generates a formal, 12-section evidence-grounded intelligence dossier report.
+    Generates a concise, evidence-grounded intelligence dossier.
     """
-    case = db.query(Case).filter(Case.id == case_id).first() if case_id else db.query(Case).first()
+
+    # ============================================================
+    # CASE
+    # ============================================================
+
+    case = (
+        db.query(Case).filter(Case.id == case_id).first()
+        if case_id
+        else db.query(Case).first()
+    )
+
     case_code = case.case_code if case else "SYSTEM-WIDE"
-    case_title = case.title if case else "Multi-Jurisdictional Intelligence Synthesis"
+    case_title = (
+        case.title
+        if case
+        else "Multi-Jurisdictional Intelligence Synthesis"
+    )
     district = case.district if case else "State Jurisdiction"
 
-    # 1. Fetch Entities & Centrality
-    G = build_networkx_graph(db, case.id if case else None)
-    betweenness = nx.betweenness_centrality(G) if len(G) > 0 else {}
-    degree = dict(G.degree()) if len(G) > 0 else {}
+    # ============================================================
+    # NETWORK GRAPH
+    # ============================================================
+
+    G = build_networkx_graph(
+        db,
+        case.id if case else None
+    )
+
+    betweenness = (
+        nx.betweenness_centrality(G)
+        if len(G) > 0
+        else {}
+    )
+
+    degree = (
+        dict(G.degree())
+        if len(G) > 0
+        else {}
+    )
+
+    # ============================================================
+    # ENTITIES
+    # ============================================================
 
     case_entities_query = db.query(CaseEntity)
-    if case:
-        case_entities_query = case_entities_query.filter(CaseEntity.case_id == case.id)
-    c_ents = case_entities_query.all()
-    ent_ids = [ce.entity_id for ce in c_ents]
-    entities = db.query(Entity).filter(Entity.id.in_(ent_ids)).all() if ent_ids else db.query(Entity).limit(10).all()
 
-    # 2. Fetch Relationships
-    rels_query = db.query(Relationship)
     if case:
-        rels_query = rels_query.filter(Relationship.case_id == case.id)
+        case_entities_query = case_entities_query.filter(
+            CaseEntity.case_id == case.id
+        )
+
+    c_ents = case_entities_query.all()
+
+    ent_ids = [
+        ce.entity_id
+        for ce in c_ents
+    ]
+
+    entities = (
+        db.query(Entity)
+        .filter(Entity.id.in_(ent_ids))
+        .all()
+        if ent_ids
+        else db.query(Entity).limit(10).all()
+    )
+
+    # ============================================================
+    # RELATIONSHIPS
+    # ============================================================
+
+    rels_query = db.query(Relationship)
+
+    if case:
+        rels_query = rels_query.filter(
+            Relationship.case_id == case.id
+        )
+
     relationships = rels_query.all()
 
-    # 3. Fetch Alerts
+    # ============================================================
+    # ALERTS
+    # ============================================================
+
     alerts_query = db.query(Alert)
+
     if case:
-        alerts_query = alerts_query.filter(Alert.case_id == case.id)
+        alerts_query = alerts_query.filter(
+            Alert.case_id == case.id
+        )
+
     alerts = alerts_query.all()
 
-    # 4. Fetch Evidence & Integrity
+    # ============================================================
+    # EVIDENCE
+    # ============================================================
+
     evd_query = db.query(EvidenceRecord)
+
     if case:
-        evd_query = evd_query.filter(EvidenceRecord.case_id == case.id)
+        evd_query = evd_query.filter(
+            EvidenceRecord.case_id == case.id
+        )
+
     evidences = evd_query.all()
 
-    # 5. Fetch Cross-Case Links
+    # ============================================================
+    # CROSS-CASE CORRELATIONS
+    # ============================================================
+
     ccl_query = db.query(CrossCaseLink)
+
     if case:
-        ccl_query = ccl_query.filter((CrossCaseLink.case_a_id == case.id) | (CrossCaseLink.case_b_id == case.id))
+        ccl_query = ccl_query.filter(
+            (CrossCaseLink.case_a_id == case.id)
+            | (CrossCaseLink.case_b_id == case.id)
+        )
+
     cross_links = ccl_query.all()
 
-    # 6. Audit Trail summary
-    audits = db.query(AuditLedger).order_by(AuditLedger.timestamp.desc()).limit(10).all()
+    # ============================================================
+    # AUDIT TRAIL
+    # ============================================================
 
-    # Build Structured Markdown Report Content
-    content = f"""# STATE CRIME INVESTIGATION WING — INTELLIGENCE DOSSIER
-**Document ID:** REP-{uuid.uuid4().hex[:8].upper()}  
-**Classification:** STRICTLY CONFIDENTIAL // LAW ENFORCEMENT INTELLIGENCE  
-**Date of Generation:** {datetime.utcnow().strftime('%d-%b-%Y %H:%M:%S UTC')}  
-**Investigating Officer:** {generated_by}  
-**Report Type:** {report_type}  
+    audits = (
+        db.query(AuditLedger)
+        .order_by(AuditLedger.timestamp.desc())
+        .limit(10)
+        .all()
+    )
+
+    # ============================================================
+    # DYNAMIC SUPPORTING DATA
+    # ============================================================
+
+    # Relationship type counts
+    relationship_type_counts: Dict[str, int] = {}
+
+    for r in relationships:
+        relationship_type_counts[r.relationship_type] = (
+            relationship_type_counts.get(r.relationship_type, 0) + 1
+        )
+
+    relationship_summary = ", ".join(
+        f"{rtype} ({count})"
+        for rtype, count in sorted(
+            relationship_type_counts.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
+    )
+
+    if not relationship_summary:
+        relationship_summary = "No relationship vectors recorded"
+
+    # Highest centrality entity
+    top_centrality_entity = None
+    top_centrality_score = 0.0
+
+    if entities:
+        ranked_entities = sorted(
+            entities,
+            key=lambda e: betweenness.get(e.id, 0.0),
+            reverse=True
+        )
+
+        if ranked_entities:
+            top_centrality_entity = ranked_entities[0]
+            top_centrality_score = betweenness.get(
+                ranked_entities[0].id,
+                0.0
+            )
+
+    # Alert summary
+    high_alerts = [
+        a for a in alerts
+        if str(a.severity).upper() == "HIGH"
+    ]
+
+    medium_alerts = [
+        a for a in alerts
+        if str(a.severity).upper() == "MEDIUM"
+    ]
+
+    alert_summary_parts = []
+
+    if high_alerts:
+        alert_summary_parts.append(
+            f"{len(high_alerts)} HIGH"
+        )
+
+    if medium_alerts:
+        alert_summary_parts.append(
+            f"{len(medium_alerts)} MEDIUM"
+        )
+
+    alert_summary = (
+        ", ".join(alert_summary_parts)
+        if alert_summary_parts
+        else "No active alerts"
+    )
+
+    # ============================================================
+    # BUILD REPORT
+    # ============================================================
+
+    content = f"""# STATE CRIME INVESTIGATION WING
+## INTELLIGENCE DOSSIER
+
+**Document ID:** `REP-{uuid.uuid4().hex[:8].upper()}`  
+**Classification:** `STRICTLY CONFIDENTIAL // LAW ENFORCEMENT INTELLIGENCE`  
+**Date of Generation:** `{datetime.utcnow().strftime('%d-%b-%Y %H:%M:%S UTC')}`  
+**Investigating Officer:** `{generated_by}`  
+**Report Type:** `{report_type}`  
 
 ---
 
 ## 1. CASE INFORMATION
-- **Case Code:** {case_code}
-- **Title:** {case_title}
-- **Jurisdictional District:** {district}
-- **Operational Status:** {case.status if case else 'ACTIVE'}
-- **Priority Rating:** {case.priority if case else 'HIGH'}
-- **Initial Date of Entry:** {case.created_at.strftime('%d-%b-%Y') if case else 'N/A'}
-- **Case Description:** {case.description if case else 'Broad intelligence synthesis across active crime syndicates.'}
+
+| Field | Details |
+| :--- | :--- |
+| **Case Code** | **{case_code}** |
+| **Case Title** | **{case_title}** |
+| **Jurisdiction** | {district} |
+| **Status** | **{case.status if case else 'ACTIVE'}** |
+| **Priority** | **{case.priority if case else 'HIGH'}** |
+| **Date of Entry** | {case.created_at.strftime('%d-%b-%Y') if case else 'N/A'} |
+| **Description** | {case.description if case else 'Broad intelligence synthesis across active investigations.'} |
 
 ---
 
 ## 2. EXECUTIVE SUMMARY
-Investigation under {case_code} synthesizes **{len(evidences)} verified evidence artifact(s)**, **{len(entities)} cataloged entities**, and **{len(relationships)} confirmed relationship vectors**.  
-Cross-jurisdictional intelligence engines flagged **{len(alerts)} high-priority alert(s)** requiring direct field intervention. Graph topological analysis reveals concentrated coordination bridges linking logistics, communications, and illicit financial conduits.
+
+**{case_code} — {case_title}** contains **{len(evidences)} verified evidence artifact(s)**, **{len(entities)} identified entities**, and **{len(relationships)} relationship vectors**.
+
+The system identified **{len(alerts)} intelligence alert(s)** and **{len(cross_links)} cross-case correlation record(s)** for investigator review.
 
 ---
 
-## 3. KEY ENTITIES OF INTEREST
-| Entity ID | Name / Identifier | Type | Network Degree | Betweenness Centrality | Confidence |
-| :--- | :--- | :--- | :--- | :--- | :--- |
+## 3. KEY ENTITIES
+
+**{len(entities)} entities** were identified in the selected case scope.
+
+| Entity | Type | Degree | Betweenness | Confidence |
+| :--- | :--- | ---: | ---: | ---: |
 """
+
     for e in entities:
-        b_score = round(betweenness.get(e.id, 0.0), 3)
-        deg_score = degree.get(e.id, 0)
-        content += f"| {e.id} | **{e.display_name}** | {e.entity_type} | {deg_score} | {b_score} | {e.confidence * 100:.0f}% |\n"
+        b_score = round(
+            betweenness.get(e.id, 0.0),
+            3
+        )
+
+        deg_score = degree.get(
+            e.id,
+            0
+        )
+
+        content += (
+            f"| **{e.display_name}** | {e.entity_type} | "
+            f"{deg_score} | {b_score} | "
+            f"{e.confidence * 100:.0f}% |\n"
+        )
 
     content += f"""
 ---
 
-## 4. RELATIONSHIP VECTORS
-Total identified edges: **{len(relationships)}**.
+## 4. RELATIONSHIP ANALYSIS
+
+**{len(relationships)} relationship vectors** were identified.
+
+**Relationship distribution:** {relationship_summary}
+
+### Representative Connections
+
 """
-    for r in relationships[:12]:
-        src = db.query(Entity).filter(Entity.id == r.source_entity_id).first()
-        tgt = db.query(Entity).filter(Entity.id == r.target_entity_id).first()
-        src_name = src.display_name if src else r.source_entity_id
-        tgt_name = tgt.display_name if tgt else r.target_entity_id
-        content += f"- **{src_name}** `[{r.relationship_type}]` ➔ **{tgt_name}** (Confidence: {r.confidence * 100:.0f}%)\n"
 
-    content += f"""
----
+    if relationships:
+        for r in relationships[:6]:
+            src = (
+                db.query(Entity)
+                .filter(Entity.id == r.source_entity_id)
+                .first()
+            )
 
-## 5. NETWORK GRAPH TOPOLOGY
-- **Total Network Nodes:** {len(G.nodes())}
-- **Total Network Edges:** {len(G.edges())}
-- **Connected Topological Components:** {nx.number_connected_components(G) if len(G) > 0 else 0}
-- **Centrality Finding:** Nodes with betweenness centrality > 0.15 represent operational bottlenecks and high-value intelligence collection targets.
+            tgt = (
+                db.query(Entity)
+                .filter(Entity.id == r.target_entity_id)
+                .first()
+            )
 
----
+            src_name = (
+                src.display_name
+                if src
+                else r.source_entity_id
+            )
 
-## 6. ACTIVE INTELLIGENCE ALERTS
-"""
-    if alerts:
-        for a in alerts:
-            content += f"### [{a.severity}] {a.title}\n"
-            content += f"- **Target Entity ID:** {a.entity_id}\n"
-            content += f"- **Reason:** {a.reason}\n"
-            content += f"- **Supporting Evidence:** {a.supporting_evidence}\n"
-            content += f"- **Confidence:** {a.confidence * 100:.0f}% | **Status:** {a.status}\n\n"
+            tgt_name = (
+                tgt.display_name
+                if tgt
+                else r.target_entity_id
+            )
+
+            content += (
+                f"- **{src_name}** → **{tgt_name}** "
+                f"`{r.relationship_type}` "
+                f"({r.confidence * 100:.0f}% confidence)\n"
+            )
+
+        if len(relationships) > 6:
+            content += (
+                f"\n*Showing 6 representative relationships; "
+                f"{len(relationships) - 6} additional vectors are retained "
+                f"in the investigative database.*\n"
+            )
     else:
-        content += "No active high-priority intelligence alerts for this case parameter.\n"
+        content += "No relationship vectors were recorded.\n"
 
     content += f"""
 ---
 
-## 7. CROSS-CASE CORRELATIONS
+## 5. NETWORK ANALYSIS
+
+| Metric | Result |
+| :--- | ---: |
+| **Network Nodes** | {len(G.nodes())} |
+| **Network Edges** | {len(G.edges())} |
+| **Connected Components** | {nx.number_connected_components(G) if len(G) > 0 else 0} |
+
 """
+
+    if top_centrality_entity:
+        content += (
+            f"**Highest observed betweenness:** "
+            f"{top_centrality_entity.display_name} "
+            f"({top_centrality_entity.entity_type}) — "
+            f"{top_centrality_score:.3f}.\n\n"
+        )
+    else:
+        content += (
+            "**Highest observed betweenness:** No network centrality "
+            "finding available.\n\n"
+        )
+
+    content += (
+        "Betweenness reflects network position and is used as an "
+        "investigative prioritization metric; it does not independently "
+        "establish criminal activity.\n"
+    )
+
+    content += f"""
+---
+
+## 6. INTELLIGENCE ALERTS
+
+**{len(alerts)} alert(s)** are associated with this investigative scope.
+
+"""
+
+    if alerts:
+        content += (
+            "| Severity | Alert | Target | Status | Confidence |\n"
+            "| :--- | :--- | :--- | :--- | ---: |\n"
+        )
+
+        for a in alerts:
+            target_entity = (
+                db.query(Entity)
+                .filter(Entity.id == a.entity_id)
+                .first()
+            )
+
+            target_name = (
+                target_entity.display_name
+                if target_entity
+                else a.entity_id
+            )
+
+            content += (
+                f"| **{a.severity}** | {a.title} | "
+                f"**{target_name}** | {a.status} | "
+                f"{a.confidence * 100:.0f}% |\n"
+            )
+
+        content += "\n### Alert Findings\n\n"
+
+        for a in alerts[:5]:
+            content += (
+                f"- **{a.title}:** {a.reason}\n"
+            )
+
+        if len(alerts) > 5:
+            content += (
+                f"\n*Showing 5 alert findings; "
+                f"{len(alerts) - 5} additional alerts remain available "
+                f"in the Intelligence Alerts module.*\n"
+            )
+    else:
+        content += (
+            "No intelligence alerts are currently associated with "
+            "this investigative scope.\n"
+        )
+
+    content += """
+---
+
+## 7. CROSS-CASE INTELLIGENCE
+
+"""
+
     if cross_links:
+        content += (
+            f"**{len(cross_links)} cross-case correlation record(s)** "
+            "were identified.\n\n"
+            "| Entity | Case A | Case B | Match | Confidence |\n"
+            "| :--- | :--- | :--- | :--- | ---: |\n"
+        )
+
         for cl in cross_links:
-            ent = db.query(Entity).filter(Entity.id == cl.entity_id).first()
-            ent_name = ent.display_name if ent else cl.entity_id
-            ca = db.query(Case).filter(Case.id == cl.case_a_id).first()
-            cb = db.query(Case).filter(Case.id == cl.case_b_id).first()
+            ent = (
+                db.query(Entity)
+                .filter(Entity.id == cl.entity_id)
+                .first()
+            )
+
+            ent_name = (
+                ent.display_name
+                if ent
+                else cl.entity_id
+            )
+
+            ca = (
+                db.query(Case)
+                .filter(Case.id == cl.case_a_id)
+                .first()
+            )
+
+            cb = (
+                db.query(Case)
+                .filter(Case.id == cl.case_b_id)
+                .first()
+            )
+
             ca_code = ca.case_code if ca else "CASE-A"
             cb_code = cb.case_code if cb else "CASE-B"
-            content += f"- **{ent_name}**: Links **{ca_code}** ⟷ **{cb_code}**\n"
-            content += f"  - Match Mechanism: `{cl.match_type}`\n"
-            content += f"  - Intelligence Rationale: {cl.match_reason}\n"
-            content += f"  - Algorithmic Confidence: {cl.confidence * 100:.0f}%\n"
+
+            content += (
+                f"| **{ent_name}** | {ca_code} | {cb_code} | "
+                f"`{cl.match_type}` | "
+                f"{cl.confidence * 100:.0f}% |\n"
+            )
     else:
-        content += "No cross-case linkages identified under current operational thresholds.\n"
+        content += (
+            "No cross-case correlations were identified under the "
+            "current analytical scope.\n"
+        )
 
     content += f"""
 ---
 
-## 8. EVIDENCE REFERENCES & INVENTORY
-| Evidence ID | File Name | Size (Bytes) | MIME Type | Uploaded Timestamp |
-| :--- | :--- | :--- | :--- | :--- |
+## 8. EVIDENCE INVENTORY
+
+**{len(evidences)} verified evidence artifact(s)** are associated with this case.
+
+| Evidence ID | File | Size | Status |
+| :--- | :--- | ---: | :--- |
 """
+
     for ev in evidences:
-        content += f"| **{ev.id}** | `{ev.file_name}` | {ev.file_size} | {ev.mime_type} | {ev.uploaded_at.strftime('%Y-%m-%d %H:%M')} |\n"
+        content += (
+            f"| **{ev.id}** | `{ev.file_name}` | "
+            f"{ev.file_size} bytes | **{ev.verification_status}** |\n"
+        )
+
+    if not evidences:
+        content += (
+            "| — | No evidence artifacts recorded | — | — |\n"
+        )
 
     content += f"""
 ---
 
-## 9. TAMPER-EVIDENT EVIDENCE INTEGRITY LEDGER
-Cryptographic verification summary computed using SHA-256 hash chaining:
-| Evidence ID | Verification Status | Cryptographic Hash (SHA-256) | Chained Previous Hash |
+## 9. EVIDENCE INTEGRITY
+
+All evidence artifacts are tracked through the tamper-evident SHA-256 ledger.
+
+| Evidence ID | Status | SHA-256 | Previous Hash |
 | :--- | :--- | :--- | :--- |
 """
+
     for ev in evidences:
-        content += f"| {ev.id} | **{ev.verification_status}** | `{ev.sha256_hash[:20]}...` | `{ev.previous_hash[:16]}...` |\n"
+        previous_hash = (
+            ev.previous_hash[:16] + "..."
+            if ev.previous_hash
+            else "None"
+        )
+
+        sha_hash = (
+            ev.sha256_hash[:20] + "..."
+            if ev.sha256_hash
+            else "Unavailable"
+        )
+
+        content += (
+            f"| **{ev.id}** | **{ev.verification_status}** | "
+            f"`{sha_hash}` | `{previous_hash}` |\n"
+        )
+
+    if not evidences:
+        content += (
+            "| — | No evidence records | — | — |\n"
+        )
 
     content += f"""
 ---
 
 ## 10. AI INVESTIGATION FINDINGS
-- All analytical conclusions are strictly grounded against primary case documents in the database.
-- Telecommunication call detail records corroborated physical movement logs within +/- 15 minutes of reported events.
-- Zero external unverified assumptions were injected into this dossier.
 
----
-
-## 11. INVESTIGATOR NOTES
-{scope_notes or 'Initial investigation completed. Proceed with formal notice issuance and electronic warrant verification for identified communication nodes.'}
-
----
-
-## 12. AUDIT TRAIL SUMMARY
-Append-only cryptographic audit entries confirming chain of custody:
 """
-    for ad in audits[:5]:
-        content += f"- `[{ad.timestamp.strftime('%Y-%m-%d %H:%M:%S')}]` **{ad.action}** by `{ad.actor_id}`: {ad.details} (Hash: `{ad.record_hash[:12]}...`)\n"
+
+    # ============================================================
+    # DYNAMIC AI INVESTIGATION FINDINGS
+    # ============================================================
+
+    if top_centrality_entity:
+        centrality_finding = (
+            f"The highest network centrality observed in this scope "
+            f"is associated with **{top_centrality_entity.display_name}**, "
+            f"with a betweenness score of **{top_centrality_score:.3f}**."
+        )
+    else:
+        centrality_finding = (
+            "No centrality finding was available for the current scope."
+        )
+
+    if relationship_type_counts:
+        relationship_finding = (
+            f"The relationship graph contains **{len(relationships)} "
+            f"vectors**, primarily represented by "
+            f"**{relationship_summary}**."
+        )
+    else:
+        relationship_finding = (
+            "No relationship vectors were available for analysis."
+        )
+
+    if alerts:
+        alert_finding = (
+            f"The intelligence rules engine identified **{len(alerts)} "
+            f"alert(s)** requiring investigator review."
+        )
+
+        first_alert = alerts[0]
+
+        alert_detail = (
+            f"The current leading alert is **{first_alert.title}**, "
+            f"rated **{first_alert.severity}**, involving the "
+            f"identified entity `{first_alert.entity_id}`."
+        )
+    else:
+        alert_finding = (
+            "No intelligence alerts were generated for the current scope."
+        )
+
+        alert_detail = (
+            "No alert-specific investigative finding is currently available."
+        )
+
+    if cross_links:
+        cross_case_finding = (
+            f"Cross-case analysis identified **{len(cross_links)} "
+            f"correlation record(s)** involving recurring entities or "
+            f"identifiers across investigative dossiers."
+        )
+    else:
+        cross_case_finding = (
+            "No cross-case correlation records were identified."
+        )
+
+    integrity_verified = sum(
+        1
+        for ev in evidences
+        if str(ev.verification_status).upper() == "VERIFIED"
+    )
+
+    integrity_finding = (
+        f"**{integrity_verified} of {len(evidences)} evidence artifact(s)** "
+        f"are currently marked VERIFIED in the evidence ledger."
+        if evidences
+        else
+        "No evidence artifacts are currently associated with this scope."
+    )
+
+    content += (
+        f"- {relationship_finding}\n"
+        f"- {centrality_finding}\n"
+        f"- {alert_finding} {alert_detail}\n"
+        f"- {cross_case_finding}\n"
+        f"- {integrity_finding}\n\n"
+        "These findings are generated from the investigative records "
+        "available within the selected system scope. They are intended "
+        "to assist investigator decision-making and require independent "
+        "human validation before operational or legal action.\n"
+    )
 
     content += f"""
 ---
-*Confidential — Generated by Thupparivalan Criminal Investigation Intelligence System.*
+
+## 11. INVESTIGATOR NOTES
+
+{scope_notes or 'Investigator review and field corroboration recommended for the identified investigative leads.'}
+
+---
+
+## 12. AUDIT TRAIL
+
+Recent investigative and evidence-integrity activity:
+
+| Time | Action | Actor |
+| :--- | :--- | :--- |
 """
+
+    for ad in audits[:5]:
+        content += (
+            f"| `{ad.timestamp.strftime('%Y-%m-%d %H:%M:%S')}` | "
+            f"**{ad.action}** | `{ad.actor_id}` |\n"
+        )
+
+    if not audits:
+        content += (
+            "| — | No audit entries available | — |\n"
+        )
+
+    content += f"""
+---
+
+## CONFIDENTIALITY NOTICE
+
+**Confidential — Generated by Thupparivalan Criminal Investigation Intelligence System.**
+
+This dossier contains investigative intelligence generated from records available within the system. Algorithmic findings and correlations are intended to assist authorized investigators and require appropriate human validation.
+
+**Evidence Integrity:** SHA-256 Tamper-Evident Ledger  
+**System:** Thupparivalan Criminal Investigation Intelligence Platform  
+"""
+
+    # ============================================================
+    # SAVE REPORT
+    # ============================================================
 
     report = Report(
         id=f"REP-{str(uuid.uuid4())[:8]}",
@@ -211,7 +689,9 @@ Append-only cryptographic audit entries confirming chain of custody:
         content=content,
         created_at=datetime.utcnow()
     )
+
     db.add(report)
     db.commit()
     db.refresh(report)
+
     return report
